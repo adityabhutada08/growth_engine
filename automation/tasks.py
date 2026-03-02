@@ -3,7 +3,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 
-from leads.models import Lead
+from leads.models import Lead, SalesPerson
+from django.core.mail import send_mail
 
 
 @shared_task
@@ -11,9 +12,14 @@ def process_new_lead(lead_id):
 
     lead = Lead.objects.get(id=lead_id)
 
+    sales_person = assign_lead(lead)
+
     send_customer_email(lead)
 
     send_internal_notification(lead)
+
+    if sales_person:
+        send_sales_assignment_email(lead, sales_person)
 
     return True
 
@@ -66,6 +72,50 @@ def send_internal_notification(lead):
     msg.attach_alternative(html_content, "text/html")
 
     msg.send()
+
+
+def assign_lead(lead):
+
+    sales_person = SalesPerson.objects.filter(
+        is_active=True
+    ).order_by('assigned_count').first()
+
+    if sales_person:
+
+        lead.assigned_to = sales_person
+        lead.status = 'assigned'
+        lead.save()
+
+        sales_person.assigned_count += 1
+        sales_person.save()
+
+        return sales_person
+
+    return None
+
+
+def send_sales_assignment_email(lead, sales_person):
+
+    subject = "New Lead Assigned To You"
+
+    message = f"""
+    Lead Details:
+
+    Name: {lead.name}
+    Phone: {lead.phone}
+    Email: {lead.email}
+    Source: {lead.source}
+    Campaign: {lead.campaign}
+    """
+
+    
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [sales_person.email],
+        fail_silently=False
+    )
 
 
 # from celery import shared_task
