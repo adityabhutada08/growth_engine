@@ -1,5 +1,22 @@
 from django.db import models
 import uuid
+from django.contrib.auth.models import AbstractUser
+
+
+class SalesPerson(models.Model):
+
+    name = models.CharField(max_length=255)
+
+    email = models.EmailField(unique=True)
+
+    is_active = models.BooleanField(default=True)
+
+    assigned_count = models.IntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Lead(models.Model):
@@ -58,10 +75,21 @@ class Lead(models.Model):
     )
 
     # Status
+    STATUS_CHOICES = [
+
+    ('new', 'New'),
+    ('assigned', 'Assigned'),
+    ('contacted', 'Contacted'),
+    ('qualified', 'Qualified'),
+    ('converted', 'Converted'),
+    ('lost', 'Lost'),
+]
+
     status = models.CharField(
-        max_length=50,
-        default="new"
-    )
+    max_length=50,
+    choices=STATUS_CHOICES,
+    default='new'
+)
 
     # Duplicate detection
     is_duplicate = models.BooleanField(
@@ -77,5 +105,13 @@ class Lead(models.Model):
         auto_now=True
     )
 
-    def __str__(self):
-        return f"{self.name} - {self.phone}"
+    assigned_to = models.ForeignKey(
+        SalesPerson,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='leads'
+    )
+
+def __str__(self):
+    return f"{self.name} - {self.phone}"

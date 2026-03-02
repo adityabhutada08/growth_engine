@@ -1,5 +1,25 @@
 from django.contrib import admin
-from .models import Lead
+from .models import Lead, SalesPerson
+
+@admin.register(SalesPerson)
+class SalesPersonAdmin(admin.ModelAdmin):
+    
+    list_display = (
+        'name',
+        'email',
+        'assigned_count',
+        'is_active',
+        'created_at'
+    )
+
+    list_filter = (
+        'is_active',
+    )
+
+    search_fields = (
+        'name',
+        'email'
+    )
 
 
 @admin.register(Lead)
