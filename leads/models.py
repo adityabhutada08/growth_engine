@@ -1,6 +1,15 @@
 from django.db import models
 import uuid
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+
+
+def save(self, *args, **kwargs):
+
+    if self.status == 'converted' and not self.conversion_date:
+        self.conversion_date = timezone.now()
+
+    super().save(*args, **kwargs)
 
 
 class SalesPerson(models.Model):
@@ -111,6 +120,18 @@ class Lead(models.Model):
         null=True,
         blank=True,
         related_name='leads'
+    )
+
+    revenue = models.DecimalField(
+        max_digits=13,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+
+    conversion_date = models.DateTimeField(
+        null=True,
+        blank=True
     )
 
 def __str__(self):

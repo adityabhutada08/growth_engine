@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'leads',
     'automation',
     'django_celery_results',
+    'analytics',
 
 ]
 
