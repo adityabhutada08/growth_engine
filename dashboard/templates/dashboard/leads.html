@@ -5,8 +5,28 @@
     <h2>All Leads</h2>
     <span class="badge bg-primary">{{ leads.count }} Total</span>
 </div>
+<form method="GET" class="row mb-4">
 
-<div class="card card-kpi p-0 overflow-hidden">
+    <div class="col-md-4">
+        <input type="text" name="search" class="form-control" placeholder="Search by name, phone, email">
+    </div>
+
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">All Status</option>
+            {% for key, value in status_choices %}
+                <option value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+
+</form>
+
+<div class="card card-kpi p-0" style="overflow: visible;">
     <table class="table table-hover mb-0">
         <thead class="table-light">
             <tr>
@@ -14,7 +34,8 @@
                 <th>Email</th>
                 <th>Source</th>
                 <th>Status</th>
-                <th>Created</th>
+                <th>Assigned to</th>
+                <th>Created At</th>
             </tr>
         </thead>
         <tbody>
@@ -23,13 +44,36 @@
                 <td><strong>{{ lead.name }}</strong></td>
                 <td>{{ lead.email }}</td>
                 <td><span class="badge bg-secondary">{{ lead.source }}</span></td>
+               <td>
+    <div class="dropdown">
+        <button class="btn btn-sm dropdown-toggle rounded-pill px-3 
+            {% if lead.status == 'new' %}btn-outline-info
+            {% elif lead.status == 'converted' %}btn-success
+            {% elif lead.status == 'lost' %}btn-danger
+            {% elif lead.status == 'contacted' %}btn-primary
+            {% elif lead.status == 'assigned' %}btn-warning
+            {% else %}btn-secondary{% endif %}" 
+            type="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false">
+            {{ lead.status|upper }}
+        </button>
+        <ul class="dropdown-menu shadow border-0 mt-2">
+            <li><h6 class="dropdown-header">Update Status</h6></li>
+            <li><a class="dropdown-item" href="{% url 'update-status' lead.id 'contacted' %}">Contacted</a></li>
+            <li><a class="dropdown-item" href="{% url 'update-status' lead.id 'qualified' %}">Qualified</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-success fw-bold" href="{% url 'update-status' lead.id 'converted' %}">Converted</a></li>
+            <li><a class="dropdown-item text-danger" href="{% url 'update-status' lead.id 'lost' %}">Lost</a></li>
+        </ul>
+    </div>
+</td>
                 <td>
-                    <span class="badge 
-                        {% if lead.status == 'new' %}bg-info
-                        {% elif lead.status == 'converted' %}bg-success
-                        {% else %}bg-warning{% endif %}">
-                        {{ lead.status|upper }}
-                    </span>
+                    {% if lead.assigned_to %}
+                        {{ lead.assigned_to.name }}
+                    {% else %}
+                        <span class="text-muted">Unassigned</span>
+                    {% endif %}
                 </td>
                 <td>{{ lead.created_at|date:"M d, Y" }}</td>
             </tr>

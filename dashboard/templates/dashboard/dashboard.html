@@ -61,4 +61,25 @@
     });
 </script>
 
+<hr class="my-5">
+
+<h4>Sales Leaderboard 🏆</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Sales Person</th>
+            <th>Total Revenue</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in sales_leaderboard %}
+        <tr>
+            <td>{{ item.assigned_to__name }}</td>
+            <td>₹{{ item.total_revenue }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}
