@@ -1,0 +1,44 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>All Leads</h2>
+    <span class="badge bg-primary">{{ leads.count }} Total</span>
+</div>
+
+<div class="card card-kpi p-0 overflow-hidden">
+    <table class="table table-hover mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lead in leads %}
+            <tr>
+                <td><strong>{{ lead.name }}</strong></td>
+                <td>{{ lead.email }}</td>
+                <td><span class="badge bg-secondary">{{ lead.source }}</span></td>
+                <td>
+                    <span class="badge 
+                        {% if lead.status == 'new' %}bg-info
+                        {% elif lead.status == 'converted' %}bg-success
+                        {% else %}bg-warning{% endif %}">
+                        {{ lead.status|upper }}
+                    </span>
+                </td>
+                <td>{{ lead.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center p-4">No leads found. Start your ads!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -22,3 +22,4 @@ venv/
 db.sqlite3
 *.rdb
 .env
+.dummy.txt

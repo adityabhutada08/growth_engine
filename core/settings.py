@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'automation',
     'django_celery_results',
     'analytics',
-
+    'dashboard',
 ]
 
 MIDDLEWARE = [

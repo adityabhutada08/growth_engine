@@ -1,0 +1,64 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Dashboard Overview</h2>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card card-kpi p-4">
+            <div>Total Leads</div>
+            <div class="kpi-number">{{ total_leads }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-kpi p-4">
+            <div>Converted</div>
+            <div class="kpi-number text-success">{{ converted }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-kpi p-4">
+            <div>Conversion Rate</div>
+            <div class="kpi-number text-primary">{{ conversion_rate }}%</div>
+        </div>
+    </div>
+
+</div>
+
+<hr class="my-5">
+
+<h4>Campaign Performance</h4>
+
+<canvas id="campaignChart"></canvas>
+
+<script>
+    const ctx = document.getElementById('campaignChart');
+
+    const data = {
+        labels: [
+            {% for item in leads_by_campaign %}
+                "{{ item.campaign }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Leads',
+            data: [
+                {% for item in leads_by_campaign %}
+                    {{ item.total }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: data
+    });
+</script>
+
+{% endblock %}
